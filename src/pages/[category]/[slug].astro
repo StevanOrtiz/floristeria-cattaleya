@@ -1,0 +1,97 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import Icon from '../../components/Icon.astro';
+import { getCategoryByPath, getProductBySlug, getProducts, cachePublic, formatPrice, productUrl, productWaLink } from '../../lib/catalog';
+import { SITE_URL, business } from '../../lib/site';
+
+const category = await getCategoryByPath('/' + Astro.params.category);
+const product = category ? await getProductBySlug(category.id, Astro.params.slug ?? '') : null;
+if (!category || !product) return Astro.rewrite('/404');
+
+Astro.response.headers.set('Cache-Control', cachePublic);
+const related = (await getProducts({ category: category.id, limit: 5 })).filter((p) => p.id !== product.id).slice(0, 4);
+const first = product.images[0];
+
+const ld = [
+  {
+    '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Inicio', item: SITE_URL },
+      { '@type': 'ListItem', position: 2, name: category.name, item: SITE_URL + category.path },
+      { '@type': 'ListItem', position: 3, name: product.name, item: SITE_URL + productUrl(product) },
+    ],
+  },
+  {
+    '@context': 'https://schema.org', '@type': 'Product',
+    name: product.name, description: product.description || undefined,
+    image: product.images.map((i) => SITE_URL + i.src),
+    ...(product.price !== null && {
+      offers: { '@type': 'Offer', price: product.price.toFixed(2), priceCurrency: 'EUR', availability: 'https://schema.org/InStock', url: SITE_URL + productUrl(product), seller: { '@id': `${SITE_URL}/#florist` } },
+    }),
+  },
+];
+const rows: [string, string | null][] = [
+  ['Medidas', product.dimensions],
+  ['Riego', product.watering],
+];
+---
+<Base title={product.name} description={product.description || `${product.name} en ${business.address.city}. Pídelo por WhatsApp.`} jsonLd={ld} image={first?.src}>
+  <PageHero title={product.name} crumbs={[{ label: category.name, href: category.path }, { label: product.name }]} />
+  <section class="band">
+    <div class="wrap detail">
+      <div class="gallery">
+        {first
+          ? <img id="main-img" src={first.src} alt={first.alt} width="900" height="900" fetchpriority="high" />
+          : <div class="noimg"></div>}
+        {product.images.length > 1 && (
+          <ul class="thumbs">
+            {product.images.map((i, n) => (
+              <li><button type="button" data-full={i.src} data-alt={i.alt} aria-label={`Ver foto ${n + 1}`}><img src={i.thumb} alt="" width="90" height="90" loading="lazy" /></button></li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      <div class="info">
+        <p class="price">{formatPrice(product.price)}</p>
+        {product.description && <p>{product.description}</p>}
+        <a class="btn btn-wa" href={productWaLink(product)} target="_blank" rel="noopener"><Icon name="whatsapp" size={20} /> Pedir por WhatsApp</a>
+
+        {product.composition.length > 0 && (<><h2>Composición</h2><ul class="list">{product.composition.map((c) => <li>{c}</li>)}</ul></>)}
+        {rows.filter(([, v]) => v).map(([k, v]) => <p><strong>{k}:</strong> {v}</p>)}
+        {product.care.length > 0 && (<><h2>Cuidados</h2><ul class="list">{product.care.map((c) => <li>{c}</li>)}</ul></>)}
+        {product.occasions.length > 0 && (<><h2>Ocasiones</h2><p>{product.occasions.join(' · ')}</p></>)}
+      </div>
+    </div>
+  </section>
+
+  {related.length > 0 && (
+    <section class="band blush">
+      <div class="wrap">
+        <div class="sec-head"><h2>También te puede gustar</h2></div>
+        <ul class="cards cols-4">{related.map((p) => <ProductCard product={p} />)}</ul>
+      </div>
+    </section>
+  )}
+</Base>
+
+<style>
+  .detail { display: grid; gap: 2rem; }
+  @media (min-width: 860px) { .detail { grid-template-columns: 1.1fr 1fr; } }
+  #main-img, .noimg { width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; border-radius: 14px; background: var(--blush-2); }
+  .thumbs { list-style: none; display: flex; gap: .6rem; padding: 0; margin: .8rem 0 0; flex-wrap: wrap; }
+  .thumbs button { border: 2px solid transparent; padding: 0; border-radius: 8px; overflow: hidden; cursor: pointer; background: none; }
+  .thumbs button:hover, .thumbs button:focus-visible { border-color: var(--orchid); }
+  .thumbs img { width: 72px; height: 72px; object-fit: cover; }
+  .price { font: 600 1.8rem var(--serif); color: var(--orchid); margin-bottom: .6rem; }
+  .info h2 { font-size: 1.2rem; margin-top: 1.6rem; }
+  .list { padding-left: 1.2rem; margin: 0 0 1rem; }
+</style>
+
+<script>
+  const main = document.getElementById('main-img') as HTMLImageElement | null;
+  document.querySelectorAll<HTMLButtonElement>('.thumbs button').forEach((b) =>
+    b.addEventListener('click', () => { if (main) { main.src = b.dataset.full!; main.alt = b.dataset.alt ?? ''; } }));
+</script>

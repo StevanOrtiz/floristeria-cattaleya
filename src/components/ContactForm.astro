@@ -1,0 +1,35 @@
+---
+import { PUBLIC_TURNSTILE_SITE_KEY } from 'astro:env/client';
+interface Props { kind: 'contacto' | 'evento' }
+const { kind } = Astro.props;
+---
+<form class="form" data-contact-form data-kind={kind} novalidate>
+  <div class="row">
+    <label>Nombre *<input name="nombre" required maxlength="100" autocomplete="name" /></label>
+    <label>Email *<input name="email" type="email" required maxlength="160" autocomplete="email" /></label>
+  </div>
+  <div class="row">
+    <label>Teléfono<input name="telefono" type="tel" maxlength="30" autocomplete="tel" /></label>
+    {kind === 'contacto'
+      ? <label>Asunto *<input name="asunto" required maxlength="120" /></label>
+      : <label>Tipo de evento *<input name="tipo_evento" required maxlength="80" placeholder="Boda, bautizo, empresa…" /></label>}
+  </div>
+  {kind === 'evento' && (
+    <div class="row">
+      <label>Fecha prevista<input name="fecha_evento" maxlength="40" placeholder="p. ej. 12 de junio" /></label>
+      <label>Lugar<input name="lugar" maxlength="120" /></label>
+    </div>
+  )}
+  <label>Mensaje *<textarea name="mensaje" rows="5" required minlength="10" maxlength="3000"></textarea></label>
+  <input type="text" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
+  <input type="hidden" name="ts" value="" />
+  {PUBLIC_TURNSTILE_SITE_KEY && <div class="cf-turnstile" data-sitekey={PUBLIC_TURNSTILE_SITE_KEY}></div>}
+  <label class="check">
+    <input type="checkbox" name="consentimiento" required />
+    <span>He leído y acepto la <a href="/politica-de-privacidad">política de privacidad</a>. *</span>
+  </label>
+  <div class="form-msg" role="status" aria-live="polite" hidden></div>
+  <button class="btn btn-orchid" type="submit">Enviar mensaje</button>
+</form>
+{PUBLIC_TURNSTILE_SITE_KEY && <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>}
+<script>import '../scripts/contact';</script>

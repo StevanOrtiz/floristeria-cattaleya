@@ -1,0 +1,43 @@
+---
+import Icon from './Icon.astro';
+import { reviews } from '../data/reviews';
+---
+<section class="band reviews" aria-labelledby="rev-title">
+  <div class="wrap">
+    <div class="sec-head" data-reveal>
+      <h2 id="rev-title">Lo que dicen nuestros clientes</h2>
+      <span class="orn" aria-hidden="true"><Icon name="flower" size={26} /></span>
+    </div>
+    <ul data-stagger>
+      {reviews.map((r) => (
+        <li>
+          <blockquote>
+            <p>“{r.text}”</p>
+            <footer>
+              <span class="av" aria-hidden="true">{r.name[0]}</span>
+              <div>
+                <strong>{r.name}</strong>
+                <span class="stars" role="img" aria-label={`${r.stars} de 5 estrellas`}>
+                  {Array.from({ length: r.stars }).map(() => <Icon name="star" size={14} />)}
+                </span>
+              </div>
+            </footer>
+          </blockquote>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .orn { display: block; text-align: center; color: var(--orchid); }
+  ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 1.1rem; }
+  @media (min-width: 860px) { ul { grid-template-columns: repeat(3, 1fr); } }
+  li { background: var(--blush); border-radius: 12px; padding: 1.3rem 1.4rem; }
+  blockquote { margin: 0; display: grid; gap: .9rem; }
+  blockquote p { margin: 0; font-size: .88rem; color: var(--ink); }
+  footer { display: flex; align-items: center; gap: .8rem; }
+  .av { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 50%; background: var(--orchid); color: #fff; font: 1.3rem var(--serif); flex: none; }
+  footer strong { display: block; font-size: .8rem; color: var(--wine); }
+  .stars { display: inline-flex; gap: 2px; color: var(--orchid); }
+</style>

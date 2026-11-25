@@ -1,0 +1,26 @@
+---
+import Icon from './Icon.astro';
+import { business } from '../lib/site';
+---
+<section class="services" aria-label="Nuestros servicios">
+  <ul class="wrap" data-stagger>
+    {business.services.map((s) => (
+      <li>
+        <Icon name={s.icon} size={34} />
+        <div><strong>{s.title}</strong><span>{s.text}</span></div>
+      </li>
+    ))}
+  </ul>
+</section>
+
+<style>
+  .services { background: var(--cream); padding-block: 1.6rem; border-block: 1px solid var(--line); }
+  ul { list-style: none; margin: 0 auto; padding: 0 var(--gutter); display: grid; gap: 1.2rem; grid-template-columns: 1fr; }
+  @media (min-width: 560px) { ul { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1000px) { ul { grid-template-columns: repeat(4, 1fr); } li + li { border-left: 1px solid var(--line); padding-left: 1.2rem; } }
+  li { display: flex; align-items: center; gap: .9rem; color: var(--wine); }
+  li :global(svg) { flex: none; color: var(--wine); }
+  li div { display: grid; line-height: 1.35; }
+  strong { font: 500 .95rem var(--serif); }
+  span { font-size: .78rem; color: var(--muted); }
+</style>

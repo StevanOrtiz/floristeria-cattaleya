@@ -1,0 +1,17 @@
+<div id="cookie-banner" class="cookie" role="dialog" aria-modal="false" aria-labelledby="ck-title" hidden>
+  <h2 id="ck-title">Cookies</h2>
+  <p>Usamos solo cookies técnicas. El mapa de Google Maps instala cookies de terceros y solo se carga si lo aceptas.
+    Más información en la <a href="/politica-de-cookies">política de cookies</a>.</p>
+  <div class="actions">
+    <button type="button" class="btn btn-sm btn-orchid" data-consent="all">Aceptar</button>
+    <button type="button" class="btn btn-sm btn-orchid" data-consent="necessary">Rechazar</button>
+  </div>
+</div>
+
+<style>
+  .cookie { position: fixed; left: 12px; right: 12px; bottom: 12px; z-index: 150; max-width: 520px; background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 1rem 1.2rem; box-shadow: 0 12px 40px rgb(74 38 56 / .22); }
+  .cookie[hidden] { display: none; }
+  .cookie h2 { font-size: 1.1rem; margin-bottom: .3rem; }
+  .cookie p { font-size: .85rem; margin-bottom: .8rem; }
+  .actions { display: flex; gap: .6rem; }
+</style>

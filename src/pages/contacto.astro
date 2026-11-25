@@ -1,0 +1,45 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import ContactForm from '../components/ContactForm.astro';
+import MapEmbed from '../components/MapEmbed.astro';
+import Icon from '../components/Icon.astro';
+import { business, waLink } from '../lib/site';
+
+Astro.response.headers.set('Cache-Control', 'public, max-age=0, s-maxage=300, stale-while-revalidate=600');
+const a = business.address;
+---
+<Base title="Contacto" description={`Contacta con ${business.name} en ${a.city}: WhatsApp, teléfono, formulario y ubicación.`}>
+  <PageHero title="Contacto" intro="Cuéntanos qué necesitas. Respondemos rápido." crumbs={[{ label: 'Contacto' }]} />
+  <section class="band">
+    <div class="wrap layout">
+      <div>
+        <ul class="channels">
+          <li><a href={waLink('Hola, quería hacer una consulta.')} target="_blank" rel="noopener"><Icon name="whatsapp" size={26} /><span><strong>WhatsApp</strong>{business.phone}</span></a></li>
+          <li><a href={`tel:${business.phoneHref}`}><Icon name="phone" size={26} /><span><strong>Llamar</strong>{business.phone}</span></a></li>
+          <li><a href={business.social.instagram} target="_blank" rel="noopener me"><Icon name="instagram" size={26} /><span><strong>Instagram</strong>Síguenos</span></a></li>
+        </ul>
+        <h2>Escríbenos</h2>
+        <ContactForm kind="contacto" />
+      </div>
+      <aside>
+        <h2>Dónde estamos</h2>
+        <p>{a.street}, {a.postalCode} {a.city}</p>
+        <div class="map"><MapEmbed /></div>
+        <h2>Horario</h2>
+        {business.hours.map((h) => <p><strong>{h.label}:</strong> {h.text}</p>)}
+      </aside>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .layout { display: grid; gap: 2.5rem; }
+  @media (min-width: 900px) { .layout { grid-template-columns: 1.3fr 1fr; } }
+  .channels { list-style: none; padding: 0; margin: 0 0 2rem; display: grid; gap: .8rem; }
+  .channels a { display: flex; align-items: center; gap: 1rem; padding: 1rem 1.2rem; background: var(--blush); border-radius: 14px; text-decoration: none; color: var(--wine); }
+  .channels a:hover { background: var(--blush-2); }
+  .channels span { display: grid; }
+  .map { height: 260px; margin-bottom: 1.5rem; }
+  h2 { font-size: 1.4rem; }
+</style>

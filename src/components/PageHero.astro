@@ -1,0 +1,28 @@
+---
+interface Props { title: string; intro?: string; crumbs?: { label: string; href?: string }[] }
+const { title, intro, crumbs = [] } = Astro.props;
+---
+<section class="ph-hero">
+  <div class="wrap">
+    {crumbs.length > 0 && (
+      <nav aria-label="Migas de pan" class="crumbs">
+        <ol>
+          <li><a href="/">Inicio</a></li>
+          {crumbs.map((c) => <li>{c.href ? <a href={c.href}>{c.label}</a> : <span aria-current="page">{c.label}</span>}</li>)}
+        </ol>
+      </nav>
+    )}
+    <h1>{title}</h1>
+    {intro && <p class="intro">{intro}</p>}
+  </div>
+</section>
+
+<style>
+  .ph-hero { background: linear-gradient(180deg, var(--blush) 0%, var(--cream) 100%); padding-block: 2.2rem 1.6rem; text-align: center; }
+  .crumbs ol { list-style: none; display: flex; flex-wrap: wrap; justify-content: center; gap: .4rem; padding: 0; margin: 0 0 .8rem; font-size: .8rem; color: var(--muted); }
+  .crumbs li + li::before { content: '›'; margin-right: .4rem; }
+  .crumbs a { text-decoration: none; }
+  .crumbs a:hover { color: var(--orchid); }
+  h1 { font-size: clamp(2rem, 4.5vw, 3rem); margin-bottom: .3rem; }
+  .intro { color: var(--muted); max-width: 620px; margin: 0 auto; }
+</style>

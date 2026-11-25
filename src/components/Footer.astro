@@ -1,0 +1,82 @@
+---
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+import MapEmbed from './MapEmbed.astro';
+import { business, waLink } from '../lib/site';
+const year = new Date().getFullYear();
+const a = business.address;
+---
+<footer class="site-footer">
+  <div class="wrap grid">
+    <div class="col brand"><Logo light /></div>
+
+    <div class="col">
+      <h3>Contacto</h3>
+      <ul>
+        <li><Icon name="phone" size={16} /><a href={`tel:${business.phoneHref}`}>{business.phone}</a></li>
+        <li><Icon name="whatsapp" size={16} /><a href={waLink('Hola, quería hacer una consulta.')} target="_blank" rel="noopener">{business.phone}</a></li>
+        <li><Icon name="pin" size={16} /><span>{a.street}<br />{a.postalCode} {a.city}</span></li>
+        <li><Icon name="mail" size={16} /><a href={`mailto:${business.email}`}>{business.email}</a></li>
+      </ul>
+    </div>
+
+    <div class="col">
+      <h3>Síguenos</h3>
+      <div class="social">
+        <a href={business.social.instagram} aria-label="Instagram" target="_blank" rel="noopener me"><Icon name="instagram" size={20} /></a>
+        <a href={business.social.facebook} aria-label="Facebook" target="_blank" rel="noopener me"><Icon name="facebook" size={20} /></a>
+        <a href={business.social.tiktok} aria-label="TikTok" target="_blank" rel="noopener me"><Icon name="tiktok" size={20} /></a>
+        <a href={business.social.pinterest} aria-label="Pinterest" target="_blank" rel="noopener me"><Icon name="pinterest" size={20} /></a>
+      </div>
+      <p class="script quote">¡Síguenos y forma parte de nuestra historia!</p>
+    </div>
+
+    <div class="col">
+      <h3>Horario</h3>
+      <ul class="hours">
+        <li><Icon name="clock" size={16} />
+          <div>
+            {business.hours.map((h) => <p><span>{h.label}</span><br />{h.text}</p>)}
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="col mapcol"><MapEmbed /></div>
+  </div>
+
+  <div class="wrap legal">
+    <p>© {year} {business.name}. Todos los derechos reservados.</p>
+    <nav aria-label="Legal">
+      <a href="/aviso-legal">Aviso legal</a>
+      <a href="/politica-de-privacidad">Política de privacidad</a>
+      <a href="/politica-de-cookies">Cookies</a>
+      <button type="button" data-consent-open>Configurar cookies</button>
+      <a href="/admin" rel="nofollow" aria-label="Acceso administración" class="lock"><Icon name="lock" size={14} /></a>
+    </nav>
+  </div>
+</footer>
+
+<style>
+  .site-footer { background: var(--forest); color: #e9f0ea; padding-top: 2.5rem; }
+  .grid { display: grid; gap: 2rem; grid-template-columns: 1fr; padding-bottom: 2rem; }
+  @media (min-width: 640px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1000px) { .grid { grid-template-columns: 1.1fr 1fr 1fr 1fr 1.3fr; } }
+  h3 { color: #fff; font-size: 1rem; margin-bottom: .8rem; }
+  ul { list-style: none; padding: 0; margin: 0; display: grid; gap: .6rem; font-size: .85rem; }
+  li { display: flex; gap: .6rem; align-items: flex-start; }
+  li :global(svg) { margin-top: .2rem; flex: none; color: #cfe0d3; }
+  a { text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .hours p { margin: 0 0 .7rem; }
+  .social { display: flex; gap: .8rem; margin-bottom: .8rem; }
+  .social a { display: grid; place-items: center; width: 38px; height: 38px; border: 1px solid #ffffff66; border-radius: 50%; }
+  .social a:hover { background: #ffffff22; }
+  .quote { font-size: 1.4rem; line-height: 1.2; color: #f3d6dc; margin: 0; }
+  .mapcol { min-height: 160px; }
+  .legal { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .6rem; border-top: 1px solid #ffffff22; padding-block: 1rem; font-size: .75rem; }
+  .legal p { margin: 0; }
+  .legal nav { display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; }
+  .legal button { background: none; border: 0; color: inherit; font: inherit; cursor: pointer; padding: 0; text-decoration: underline; }
+  .lock { opacity: .5; display: inline-flex; }
+</style>

@@ -1,0 +1,37 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { getCategories, getProducts, formatPrice, cover } from '../../lib/catalog';
+
+const [categories, products] = await Promise.all([getCategories(), getProducts({ all: true })]);
+---
+<AdminLayout title="Productos">
+  <h1>Productos</h1>
+  <div class="toolbar">
+    <input class="grow" type="search" placeholder="Buscar por nombre…" data-admin-q aria-label="Buscar" />
+    <select data-admin-cat aria-label="Categoría">
+      <option value="">Todas</option>
+      {categories.map((c) => <option value={c.id}>{c.short}</option>)}
+    </select>
+    <a class="btn btn-orchid btn-sm" href="/admin/productos/nuevo">+ Nuevo producto</a>
+  </div>
+  <div class="panel" style="overflow:auto">
+    <table>
+      <thead><tr><th></th><th>Nombre</th><th>Categoría</th><th>Precio</th><th>Estado</th></tr></thead>
+      <tbody>
+        {products.map((p) => (
+          <tr data-row data-name={p.name.toLowerCase()} data-cat={p.categoryId}>
+            <td>{cover(p) && <img src={cover(p)!.thumb} alt="" width="44" height="44" />}</td>
+            <td><a href={`/admin/productos/${p.id}`}>{p.name}</a></td>
+            <td>{p.categoryShort}</td>
+            <td>{formatPrice(p.price)}</td>
+            <td>
+              <span class:list={['badge', { off: !p.published }]}>{p.published ? 'Visible' : 'Oculto'}</span>
+              {p.featured && <span class="badge">Destacado</span>}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+    {products.length === 0 && <p class="hint">Aún no hay productos.</p>}
+  </div>
+</AdminLayout>

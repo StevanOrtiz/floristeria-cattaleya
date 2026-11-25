@@ -1,0 +1,32 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import { business } from '../lib/site';
+export const prerender = true;
+const l = business.legal;
+const mark = (v: string) => v.startsWith('[Pendiente');
+---
+<Base title="Aviso legal" description={`Aviso legal de ${business.name}.`}>
+  <PageHero title="Aviso legal" crumbs={[{ label: 'Aviso legal' }]} />
+  <section class="band">
+    <div class="wrap prose">
+      <p class="muted">Texto orientativo conforme a la LSSI-CE. Debe revisarlo un profesional antes de publicarse.</p>
+      <h2>Titular del sitio web</h2>
+      <p>
+        Titular: <span class:list={[{ pending: mark(l.owner) }]}>{l.owner}</span><br />
+        NIF/CIF: <span class:list={[{ pending: mark(l.nif) }]}>{l.nif}</span><br />
+        Domicilio: {business.address.street}, {business.address.postalCode} {business.address.city}<br />
+        Email: {l.email}<br />
+        Registro: <span class:list={[{ pending: mark(l.registry) }]}>{l.registry}</span>
+      </p>
+      <h2>Objeto</h2>
+      <p>Este sitio web ofrece información sobre los productos y servicios de {business.name}. No existe venta online: los pedidos se gestionan por WhatsApp o teléfono.</p>
+      <h2>Propiedad intelectual</h2>
+      <p>Los contenidos, imágenes, logotipos y textos son propiedad del titular o se usan con licencia. Queda prohibida su reproducción sin autorización.</p>
+      <h2>Responsabilidad</h2>
+      <p>El titular procura que la información sea exacta, pero no garantiza la ausencia de errores. Los precios y la disponibilidad pueden cambiar sin previo aviso.</p>
+      <h2>Legislación aplicable</h2>
+      <p>Este aviso se rige por la legislación española. Para cualquier controversia, las partes se someten a los juzgados y tribunales que correspondan conforme a la normativa de consumidores.</p>
+    </div>
+  </section>
+</Base>

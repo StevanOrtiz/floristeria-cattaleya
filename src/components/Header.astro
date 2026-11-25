@@ -1,0 +1,67 @@
+---
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+import { nav, waLink, business } from '../lib/site';
+
+const path = Astro.url.pathname;
+const active = (href: string) => (href === '/' ? path === '/' : path === href || path.startsWith(href + '/'));
+const wa = waLink('Hola, me gustaría hacer un pedido.');
+---
+<header class="site-header" data-header>
+  <div class="wrap bar">
+    <a href="/" class="brand" aria-label={`${business.name}, inicio`}><Logo /></a>
+
+    <nav class="main-nav" aria-label="Principal">
+      <ul>
+        {nav.map((n) => (
+          <li><a href={n.href} aria-current={active(n.href) ? 'page' : undefined}>{n.label}</a></li>
+        ))}
+      </ul>
+    </nav>
+
+    <div class="tools">
+      <a href="/buscar" class="icon-btn" data-search-open aria-label="Buscar productos" aria-haspopup="dialog"><Icon name="search" /></a>
+      <a href="/catalogo" class="icon-btn" aria-label="Ver catálogo"><Icon name="bag" /></a>
+      <a href={wa} class="wa-btn" aria-label="Pedir por WhatsApp" target="_blank" rel="noopener"><Icon name="whatsapp" size={26} /></a>
+      <button class="icon-btn burger" type="button" data-menu-open aria-label="Abrir menú" aria-expanded="false" aria-controls="mobile-menu"><Icon name="menu" size={26} /></button>
+    </div>
+  </div>
+</header>
+
+<!-- outside <header>: backdrop-filter on the header would trap fixed children -->
+<div id="mobile-menu" class="mobile-menu" hidden>
+  <button type="button" class="icon-btn close" data-menu-close aria-label="Cerrar menú"><Icon name="close" size={28} /></button>
+  <nav aria-label="Móvil">
+    <ul>
+      {nav.map((n) => <li><a href={n.href}>{n.label}</a></li>)}
+    </ul>
+  </nav>
+  <a href={wa} class="btn btn-wa" target="_blank" rel="noopener"><Icon name="whatsapp" size={20} /> Pedir por WhatsApp</a>
+</div>
+
+<style>
+  .site-header {
+    position: sticky; top: 0; z-index: 50; background: var(--cream);
+    border-bottom: 1px solid transparent; transition: transform .35s, box-shadow .3s;
+  }
+  .site-header.scrolled { box-shadow: 0 4px 18px rgb(74 38 56 / .08); }
+  .site-header.hidden { transform: translateY(-100%); }
+  .bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-block: .6rem; }
+  .brand { text-decoration: none; }
+  .main-nav { display: none; }
+  .main-nav ul { display: flex; gap: 1.6rem; list-style: none; margin: 0; padding: 0; }
+  .main-nav a { font: .86rem var(--serif); text-decoration: none; color: var(--wine); padding: .4rem 0; border-bottom: 1.5px solid transparent; }
+  .main-nav a:hover { color: var(--orchid); }
+  .main-nav a[aria-current='page'] { color: var(--orchid); border-bottom-color: var(--orchid); }
+  .tools { display: flex; align-items: center; gap: .5rem; }
+  .icon-btn { display: inline-grid; place-items: center; width: 40px; height: 40px; border: 0; background: none; color: var(--wine); cursor: pointer; border-radius: 50%; }
+  .icon-btn:hover { background: var(--blush); }
+  .wa-btn { display: inline-grid; place-items: center; width: 42px; height: 42px; border-radius: 50%; background: var(--wa); color: #fff; }
+  @media (min-width: 1020px) { .main-nav { display: block; } .burger { display: none; } }
+
+  .mobile-menu { position: fixed; inset: 0; z-index: 100; background: var(--cream); display: grid; align-content: center; justify-items: center; gap: 2rem; padding: 2rem; }
+  .mobile-menu[hidden] { display: none; }
+  .mobile-menu ul { list-style: none; padding: 0; margin: 0; text-align: center; display: grid; gap: .6rem; }
+  .mobile-menu li a { font: 500 1.7rem var(--serif); text-decoration: none; color: var(--wine); }
+  .close { position: absolute; top: 14px; right: 14px; }
+</style>

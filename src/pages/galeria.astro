@@ -1,0 +1,26 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import { getProducts, cachePublic } from '../lib/catalog';
+
+Astro.response.headers.set('Cache-Control', cachePublic);
+const products = await getProducts({});
+const photos = products.flatMap((p) => p.images.map((i) => ({ ...i, alt: i.alt || p.name })));
+---
+<Base title="Galería de flores y arreglos" description="Galería de ramos, arreglos florales y plantas de Floristería Cattaleya en Madrid.">
+  <PageHero title="Galería" intro="Un pequeño vistazo a nuestro trabajo. Cada arreglo es único, como cada historia." crumbs={[{ label: 'Galería' }]} />
+  <section class="band">
+    <div class="wrap">
+      {photos.length === 0
+        ? <p class="muted" style="text-align:center">Muy pronto subiremos fotos de nuestros trabajos.</p>
+        : <ul class="grid" data-stagger>{photos.map((p, i) => <li><img src={p.src} alt={p.alt} width="600" height="600" loading={i < 6 ? 'eager' : 'lazy'} /></li>)}</ul>}
+    </div>
+  </section>
+</Base>
+
+<style>
+  .grid { list-style: none; margin: 0; padding: 0; display: grid; gap: .8rem; grid-template-columns: repeat(2, 1fr); }
+  @media (min-width: 720px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (min-width: 1000px) { .grid { grid-template-columns: repeat(4, 1fr); } }
+  img { width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; border-radius: 8px; background: var(--blush-2); }
+</style>

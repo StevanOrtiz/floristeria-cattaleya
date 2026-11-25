@@ -1,0 +1,20 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import { business } from '../lib/site';
+export const prerender = true;
+---
+<Base title="Política de cookies" description={`Política de cookies de ${business.name}.`}>
+  <PageHero title="Política de cookies" crumbs={[{ label: 'Cookies' }]} />
+  <section class="band">
+    <div class="wrap prose">
+      <p class="muted">Texto orientativo conforme a la guía de la AEPD. Debe revisarlo un profesional antes de publicarse.</p>
+      <h2>Qué usamos</h2>
+      <p><strong>Técnicas:</strong> la sesión de administración (solo para el titular) y el almacenamiento local donde guardamos tu elección sobre cookies. No requieren consentimiento.</p>
+      <p><strong>De terceros:</strong> el mapa de Google Maps. Solo se carga si pulsas «Aceptar». Google puede instalar cookies propias; consulta su política.</p>
+      <p>No usamos cookies de analítica ni de publicidad.</p>
+      <h2>Cambiar tu elección</h2>
+      <p>Puedes cambiarla cuando quieras con el botón «Configurar cookies» del pie de página, o borrando los datos del sitio en tu navegador.</p>
+    </div>
+  </section>
+</Base>

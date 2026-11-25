@@ -1,0 +1,21 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import { waLink } from '../lib/site';
+export const prerender = true;
+const tips = [
+  ['Luz', 'La mayoría de plantas de interior prefieren luz brillante indirecta. Evita el sol directo en las horas centrales.'],
+  ['Riego', 'Riega cuando el sustrato esté seco al tacto en los primeros 2 cm. Es mejor quedarse corto que encharcar.'],
+  ['Orquídeas', 'Riega cada 7-10 días sumergiendo la maceta 10 minutos y dejando escurrir. Nunca dejes agua en el plato.'],
+  ['Ramos', 'Corta 2 cm del tallo en diagonal, cambia el agua cada 2 días y mantén el ramo lejos de frutas y del sol.'],
+];
+---
+<Base title="Cuidado de plantas y flores" description="Consejos sencillos de luz, riego y cuidados para tus plantas y ramos.">
+  <PageHero title="Cuidado de plantas y flores" intro="Consejos sencillos para que duren más." crumbs={[{ label: 'Cuidados' }]} />
+  <section class="band">
+    <div class="wrap prose">
+      {tips.map(([t, p]) => <><h2>{t}</h2><p>{p}</p></>)}
+      <p><a class="btn btn-wa" href={waLink('Hola, tengo una duda sobre el cuidado de mi planta.')} target="_blank" rel="noopener">Preguntar por WhatsApp</a></p>
+    </div>
+  </section>
+</Base>

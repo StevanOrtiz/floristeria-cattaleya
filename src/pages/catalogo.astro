@@ -1,0 +1,39 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import ProductCard from '../components/ProductCard.astro';
+import { getCategories, getProducts, cachePublic, productUrl, cover } from '../lib/catalog';
+import { SITE_URL } from '../lib/site';
+
+Astro.response.headers.set('Cache-Control', cachePublic);
+const [categories, products] = await Promise.all([getCategories(), getProducts({})]);
+const ld = {
+  '@context': 'https://schema.org', '@type': 'ItemList',
+  itemListElement: products.map((p, i) => ({ '@type': 'ListItem', position: i + 1, url: SITE_URL + productUrl(p), name: p.name })),
+};
+---
+<Base title="Catálogo de flores y plantas en Madrid" description="Todo nuestro catálogo: ramos, bodas, cumpleaños, San Valentín, ocasiones especiales y plantas." jsonLd={[ld]}
+  image={products.map(cover).find(Boolean)?.src}>
+  <PageHero title="Catálogo" intro="Todo lo que tenemos para ti. Pide por WhatsApp y te lo preparamos." crumbs={[{ label: 'Catálogo' }]} />
+  <section class="band">
+    <div class="wrap">
+      <div class="chips" role="group" aria-label="Filtrar por categoría">
+        <button type="button" class="chip" data-filter="all" aria-pressed="true">Todo</button>
+        {categories.map((c) => <button type="button" class="chip" data-filter={c.id} aria-pressed="false">{c.short}</button>)}
+      </div>
+      <ul class="cards cols-4" data-grid>
+        {products.map((p, i) => <ProductCard product={p} eager={i < 3} />)}
+      </ul>
+    </div>
+  </section>
+</Base>
+
+<script>
+  const chips = document.querySelectorAll<HTMLButtonElement>('[data-filter]');
+  const cards = [...document.querySelectorAll<HTMLElement>('[data-grid] > li')];
+  chips.forEach((chip) => chip.addEventListener('click', () => {
+    chips.forEach((c) => c.setAttribute('aria-pressed', String(c === chip)));
+    const f = chip.dataset.filter;
+    cards.forEach((li) => { li.hidden = !(f === 'all' || li.dataset.cat === f); });
+  }));
+</script>

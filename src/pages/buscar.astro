@@ -1,0 +1,45 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import ProductCard from '../components/ProductCard.astro';
+import { searchProducts } from '../lib/search';
+import { getCategories } from '../lib/catalog';
+import { waLink } from '../lib/site';
+
+const q = (Astro.url.searchParams.get('q') ?? '').slice(0, 80).trim();
+const cat = Astro.url.searchParams.get('categoria') ?? '';
+const [categories, results] = await Promise.all([
+  getCategories(),
+  q.length >= 2 ? searchProducts(q, { category: /^[a-z]+$/.test(cat) ? cat : undefined, limit: 100 }) : Promise.resolve([]),
+]);
+Astro.response.headers.set('Cache-Control', 'public, max-age=0, s-maxage=60');
+---
+<Base title={q ? `Resultados para “${q}”` : 'Buscar'} description="Busca flores, ramos y plantas." noindex>
+  <PageHero title="Buscar" crumbs={[{ label: 'Buscar' }]} />
+  <section class="band">
+    <div class="wrap">
+      <form action="/buscar" method="get" role="search" class="sf">
+        <label class="sr-only" for="q">Buscar</label>
+        <input id="q" name="q" value={q} maxlength="80" placeholder="Busca rosas, lilium, cumpleaños…" />
+        <select name="categoria" aria-label="Categoría">
+          <option value="">Todas</option>
+          {categories.map((c) => <option value={c.id} selected={c.id === cat}>{c.short}</option>)}
+        </select>
+        <button class="btn btn-orchid" type="submit">Buscar</button>
+      </form>
+
+      {q.length >= 2 && (
+        results.length > 0
+          ? <><p class="muted">{results.length} resultado{results.length === 1 ? '' : 's'} para “{q}”</p>
+              <ul class="cards cols-4">{results.map((p, i) => <ProductCard product={p} eager={i < 3} />)}</ul></>
+          : <p>No encontramos nada para “{q}”. Prueba con otra palabra o <a href={waLink(`Hola, busco: ${q}`)} target="_blank" rel="noopener">pregúntanos por WhatsApp</a>.</p>
+      )}
+    </div>
+  </section>
+</Base>
+
+<style>
+  .sf { display: flex; flex-wrap: wrap; gap: .6rem; margin-bottom: 1.5rem; }
+  .sf input { flex: 1 1 240px; padding: .7rem 1rem; border: 1px solid var(--line); border-radius: 999px; font: inherit; }
+  .sf select { padding: .7rem 1rem; border: 1px solid var(--line); border-radius: 999px; font: inherit; background: #fff; }
+</style>

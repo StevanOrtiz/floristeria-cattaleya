@@ -1,0 +1,31 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import { business } from '../lib/site';
+export const prerender = true;
+const l = business.legal;
+const mark = (v: string) => v.startsWith('[Pendiente');
+---
+<Base title="Política de privacidad" description={`Política de privacidad de ${business.name} (RGPD y LOPDGDD).`}>
+  <PageHero title="Política de privacidad" crumbs={[{ label: 'Privacidad' }]} />
+  <section class="band">
+    <div class="wrap prose">
+      <p class="muted">Texto orientativo conforme al RGPD y la LOPDGDD. Debe revisarlo un profesional antes de publicarse.</p>
+      <h2>Responsable</h2>
+      <p>
+        <span class:list={[{ pending: mark(l.owner) }]}>{l.owner}</span>, NIF <span class:list={[{ pending: mark(l.nif) }]}>{l.nif}</span>.
+        Domicilio: {business.address.street}, {business.address.postalCode} {business.address.city}. Contacto: {l.email}.
+      </p>
+      <h2>Qué datos tratamos y para qué</h2>
+      <p>Los datos que nos envías en los formularios (nombre, email, teléfono, mensaje y, en eventos, tipo, fecha y lugar) para responder a tu consulta o presupuesto.</p>
+      <h2>Base jurídica</h2>
+      <p>Tu consentimiento (art. 6.1.a RGPD), que otorgas al marcar la casilla del formulario y puedes retirar en cualquier momento.</p>
+      <h2>Conservación</h2>
+      <p>Mientras gestionamos tu solicitud y, después, hasta 12 meses una vez atendida, salvo obligación legal.</p>
+      <h2>Destinatarios</h2>
+      <p>No cedemos tus datos. Usamos proveedores de alojamiento y base de datos (Netlify, Neon) como encargados del tratamiento, con servidores en la UE cuando es posible.</p>
+      <h2>Tus derechos</h2>
+      <p>Acceso, rectificación, supresión, oposición, limitación y portabilidad escribiendo a {l.email}. Si no estás conforme, puedes reclamar ante la Agencia Española de Protección de Datos (aepd.es).</p>
+    </div>
+  </section>
+</Base>

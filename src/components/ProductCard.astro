@@ -1,0 +1,20 @@
+---
+import type { Product } from '../lib/catalog';
+import { cover, formatPrice, productUrl, productWaLink } from '../lib/catalog';
+interface Props { product: Product; eager?: boolean; buyLabel?: string }
+const { product: p, eager = false, buyLabel = 'Comprar' } = Astro.props;
+const img = cover(p);
+const url = productUrl(p);
+---
+<li class="card" data-cat={p.categoryId} data-sub={p.subcategory ?? ''}>
+  <a href={url} class="ph" aria-label={p.name}>
+    {img
+      ? <img src={img.thumb} alt={img.alt} width="480" height="480" loading={eager ? 'eager' : 'lazy'} decoding="async" />
+      : <span class="none" aria-hidden="true"></span>}
+  </a>
+  <a href={url} class="name">{p.name}</a>
+  <p class="price">{formatPrice(p.price)}</p>
+  <div class="buy">
+    <a class="btn btn-outline btn-sm" href={productWaLink(p)} target="_blank" rel="noopener">{p.price === null ? 'Consultar' : buyLabel}</a>
+  </div>
+</li>

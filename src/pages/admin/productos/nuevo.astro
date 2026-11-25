@@ -1,0 +1,12 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import ProductForm from '../../../components/ProductForm.astro';
+import { getCategories } from '../../../lib/catalog';
+const categories = await getCategories();
+---
+<AdminLayout title="Nuevo producto">
+  <p><a href="/admin">← Volver</a></p>
+  <h1>Nuevo producto</h1>
+  <p class="hint">Primero crea el producto; después podrás subir sus fotos.</p>
+  <ProductForm categories={categories} />
+</AdminLayout>

@@ -1,0 +1,36 @@
+{
+  "name": "Floristería Cattaleya",
+  "tagline": "Flores que hablan por ti",
+  "description": "Ramos, arreglos florales y plantas para cada ocasión en Madrid.",
+  "phone": "+34 612 345 678",
+  "phoneHref": "+34612345678",
+  "whatsappNumber": "34612345678",
+  "email": "info@floristeriacattaleya.es",
+  "address": { "street": "C/ Las Flores, 12", "postalCode": "28000", "city": "Madrid", "region": "Madrid", "country": "ES" },
+  "geo": { "lat": 40.4168, "lng": -3.7038 },
+  "mapsEmbed": "https://www.google.com/maps?q=Madrid&output=embed",
+  "mapsLink": "https://www.google.com/maps/search/?api=1&query=Madrid",
+  "hours": [
+    { "label": "Lunes a Sábado", "text": "9:00 – 20:00", "days": ["Mo", "Tu", "We", "Th", "Fr", "Sa"], "opens": "09:00", "closes": "20:00" },
+    { "label": "Domingo", "text": "10:00 – 14:00", "days": ["Su"], "opens": "10:00", "closes": "14:00" }
+  ],
+  "social": {
+    "instagram": "https://www.instagram.com/",
+    "facebook": "https://www.facebook.com/",
+    "tiktok": "https://www.tiktok.com/",
+    "pinterest": "https://www.pinterest.com/"
+  },
+  "services": [
+    { "icon": "truck", "title": "Envíos a domicilio", "text": "Llevamos tus flores donde las necesites" },
+    { "icon": "leaf", "title": "Flores frescas", "text": "Seleccionamos la mejor calidad" },
+    { "icon": "heart", "title": "Arreglos personalizados", "text": "Cuéntanos tu idea y la hacemos realidad" },
+    { "icon": "shield", "title": "Atención cercana", "text": "Te asesoramos en todo momento" }
+  ],
+  "legal": {
+    "owner": "[Pendiente: razón social del titular]",
+    "nif": "[Pendiente: NIF/CIF]",
+    "registry": "[Pendiente: datos registrales si aplica]",
+    "email": "info@floristeriacattaleya.es",
+    "jurisdiction": "España"
+  }
+}

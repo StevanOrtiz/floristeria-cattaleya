@@ -1,0 +1,83 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import CookieConsent from '../components/CookieConsent.astro';
+import SearchOverlay from '../components/SearchOverlay.astro';
+import { PUBLIC_GSC_VERIFICATION } from 'astro:env/client';
+import { SITE_URL, business } from '../lib/site';
+
+interface Props {
+  title: string;
+  description?: string;
+  noindex?: boolean;
+  image?: string;
+  jsonLd?: object[];
+  bare?: boolean;      // no header/footer (admin)
+}
+const { title, description = business.description, noindex = false, image, jsonLd = [], bare = false } = Astro.props;
+
+const canonical = SITE_URL + (Astro.url.pathname === '/' ? '' : Astro.url.pathname.replace(/\/$/, ''));
+const fullTitle = title.includes(business.name) ? title : `${title} | ${business.name}`;
+const ogImage = image ? (image.startsWith('http') ? image : SITE_URL + image) : undefined;
+
+const florist = {
+  '@context': 'https://schema.org',
+  '@type': 'Florist',
+  '@id': `${SITE_URL}/#florist`,
+  name: business.name,
+  url: SITE_URL,
+  telephone: business.phone,
+  email: business.email,
+  description: business.description,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: business.address.street,
+    postalCode: business.address.postalCode,
+    addressLocality: business.address.city,
+    addressCountry: business.address.country,
+  },
+  geo: { '@type': 'GeoCoordinates', latitude: business.geo.lat, longitude: business.geo.lng },
+  openingHoursSpecification: business.hours.map((h) => ({
+    '@type': 'OpeningHoursSpecification',
+    dayOfWeek: h.days.map((d) => ({ Mo: 'Monday', Tu: 'Tuesday', We: 'Wednesday', Th: 'Thursday', Fr: 'Friday', Sa: 'Saturday', Su: 'Sunday' }[d])),
+    opens: h.opens, closes: h.closes,
+  })),
+  sameAs: Object.values(business.social),
+};
+const ld = (o: object) => JSON.stringify(o).replace(/</g, '\\u003c');
+---
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    <meta name="theme-color" content="#fdf6f4" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="es_ES" />
+    <meta property="og:site_name" content={business.name} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    {ogImage && <meta property="og:image" content={ogImage} />}
+    <meta name="twitter:card" content={ogImage ? 'summary_large_image' : 'summary'} />
+    {PUBLIC_GSC_VERIFICATION && <meta name="google-site-verification" content={PUBLIC_GSC_VERIFICATION} />}
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    {!bare && <script type="application/ld+json" set:html={ld(florist)} />}
+    {jsonLd.map((o) => <script type="application/ld+json" set:html={ld(o)} />)}
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="skip" href="#main">Saltar al contenido</a>
+    {!bare && <Header />}
+    <main id="main"><slot /></main>
+    {!bare && <Footer />}
+    {!bare && <SearchOverlay />}
+    {!bare && <CookieConsent />}
+    {!bare && <script>import '../scripts/ui'; import '../scripts/search';</script>}
+  </body>
+</html>

@@ -1,0 +1,35 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import ProductForm from '../../../components/ProductForm.astro';
+import { getCategories, getProductById } from '../../../lib/catalog';
+
+const id = Astro.params.id ?? '';
+if (!/^[0-9a-f-]{36}$/i.test(id)) return Astro.rewrite('/404');
+const [categories, product] = await Promise.all([getCategories(), getProductById(id)]);
+if (!product) return Astro.rewrite('/404');
+---
+<AdminLayout title={product.name}>
+  <p><a href="/admin">← Volver</a></p>
+  <h1>{product.name}</h1>
+  <ProductForm categories={categories} product={product} />
+
+  <div class="panel" data-images data-product={product.id}>
+    <h2>Fotos ({product.images.length}/12)</h2>
+    <p class="hint">JPEG, PNG o WebP. Se reducen y se convierten a WebP automáticamente (se elimina la ubicación GPS). La primera es la portada.</p>
+    <ul class="imgs">
+      {product.images.map((i) => (
+        <li data-image={i.id}>
+          <img src={i.thumb} alt={i.alt} width="150" height="150" loading="lazy" />
+          <input value={i.alt} placeholder="Texto alternativo" maxlength="200" aria-label="Texto alternativo" data-alt />
+          <div class="row">
+            <button type="button" data-move="up" aria-label="Mover antes">↑</button>
+            <button type="button" data-move="down" aria-label="Mover después">↓</button>
+            <button type="button" data-del-img aria-label="Borrar foto">✕</button>
+          </div>
+        </li>
+      ))}
+    </ul>
+    <p style="margin-top:1rem"><label class="btn btn-outline btn-sm" style="cursor:pointer">+ Subir fotos<input type="file" accept="image/jpeg,image/png,image/webp" multiple hidden data-upload /></label></p>
+    <div class="form-msg" role="status" aria-live="polite" hidden data-img-msg></div>
+  </div>
+</AdminLayout>

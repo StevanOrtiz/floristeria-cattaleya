@@ -1,0 +1,41 @@
+---
+import type { Category, Product } from '../lib/catalog';
+interface Props { categories: Category[]; product?: Product }
+const { categories, product: p } = Astro.props;
+---
+<form class="form panel" data-product-form data-id={p?.id ?? ''}>
+  <div class="two">
+    <label>Nombre *<input name="name" required maxlength="120" value={p?.name ?? ''} /></label>
+    <label>Slug (URL)<input name="slug" maxlength="80" value={p?.slug ?? ''} />
+      <span class="hint">{p ? 'Cambiarlo rompe el enlace antiguo.' : 'Se genera solo desde el nombre.'}</span></label>
+  </div>
+  <div class="two">
+    <label>Categoría *
+      <select name="categoryId" required>
+        {categories.map((c) => <option value={c.id} selected={p?.categoryId === c.id}>{c.name}</option>)}
+      </select>
+    </label>
+    <label>Subcategoría / tipo<input name="subcategory" maxlength="40" value={p?.subcategory ?? ''} /></label>
+  </div>
+  <div class="two">
+    <label>Precio (€)<input name="price" inputmode="decimal" placeholder="Vacío = Consultar precio" value={p?.price ?? ''} /></label>
+    <label>Medidas<input name="dimensions" maxlength="120" value={p?.dimensions ?? ''} /></label>
+  </div>
+  <label>Descripción<textarea name="description" rows="4" maxlength="2000">{p?.description ?? ''}</textarea></label>
+  <div class="two">
+    <label>Composición (una por línea)<textarea name="composition" rows="4">{p?.composition.join('\n') ?? ''}</textarea></label>
+    <label>Cuidados (uno por línea)<textarea name="care" rows="4">{p?.care.join('\n') ?? ''}</textarea></label>
+  </div>
+  <div class="two">
+    <label>Riego<input name="watering" maxlength="120" value={p?.watering ?? ''} /></label>
+    <label>Ocasiones (separadas por comas)<input name="occasions" value={p?.occasions.join(', ') ?? ''} /></label>
+  </div>
+  <label>Palabras clave para el buscador (separadas por comas)<input name="keywords" value={p?.keywords.join(', ') ?? ''} /></label>
+  <label class="check"><input type="checkbox" name="published" checked={p ? p.published : true} /> Visible en la web</label>
+  <label class="check"><input type="checkbox" name="featured" checked={p?.featured ?? false} /> Destacado en portada</label>
+  <div class="form-msg" role="status" aria-live="polite" hidden></div>
+  <div style="display:flex;gap:.6rem;flex-wrap:wrap">
+    <button class="btn btn-orchid" type="submit">{p ? 'Guardar cambios' : 'Crear producto'}</button>
+    {p && <button class="btn btn-outline danger" type="button" data-delete-product>Borrar producto</button>}
+  </div>
+</form>

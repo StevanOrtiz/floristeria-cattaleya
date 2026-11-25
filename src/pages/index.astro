@@ -1,0 +1,151 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import ProductCard from '../components/ProductCard.astro';
+import Services from '../components/Services.astro';
+import Reviews from '../components/Reviews.astro';
+import { getCategories, getProducts, cachePublic, cover } from '../lib/catalog';
+import { business, waLink } from '../lib/site';
+
+Astro.response.headers.set('Cache-Control', cachePublic);
+
+const [categories, featured, all] = await Promise.all([
+  getCategories(),
+  getProducts({ featured: true, limit: 5 }),
+  getProducts({}),
+]);
+const catCover = (id: string) => {
+  const p = all.find((x) => x.categoryId === id && cover(x));
+  return p ? cover(p) : null;
+};
+const gallery = all.flatMap((p) => p.images.slice(0, 1).map((i) => ({ ...i, alt: p.name }))).slice(0, 5);
+const heroImg = featured.map(cover).find(Boolean) ?? null;
+---
+<Base title="Floristería en Madrid · Flores que hablan por ti" description={business.description + ' Ramos de flores frescas, bodas, plantas y entrega a domicilio.'}
+  image={heroImg?.src}>
+  <section class="hero">
+    <div class="wrap inner">
+      <div class="copy">
+        <p class="script hello">Bienvenidos a</p>
+        <h1>{business.name}</h1>
+        <p class="lead">Flores que hablan por ti…</p>
+        <p class="txt">En {business.name} encontrarás ramos, arreglos florales y detalles únicos para cada ocasión. Porque cada momento merece flores.</p>
+        <div class="cta">
+          <a class="btn btn-ghost-light" href="/catalogo"><Icon name="flower" size={20} /> Ver nuestros ramos <Icon name="arrow" size={18} /></a>
+          <a class="btn btn-wa" href={waLink('Hola, me gustaría hacer un pedido.')} target="_blank" rel="noopener"><Icon name="whatsapp" size={20} /> Pedir por WhatsApp</a>
+        </div>
+      </div>
+      <div class="visual" aria-hidden={heroImg ? undefined : 'true'}>
+        {heroImg && <img src={heroImg.src} alt={heroImg.alt} width="700" height="700" fetchpriority="high" />}
+        <div class="stamp"><span class="script">Flores que hacen especial cada momento</span><Icon name="heart" size={18} /></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band cats" aria-labelledby="cats-title">
+    <div class="wrap">
+      <div class="sec-head" data-reveal>
+        <h2 id="cats-title"><span class="orn"><Icon name="flower" size={30} /></span>Nuestras categorías<span class="orn"><Icon name="flower" size={30} /></span></h2>
+        <p>Encuentra el arreglo perfecto para cada ocasión</p>
+      </div>
+      <ul class="cat-list" data-stagger>
+        {categories.map((c) => {
+          const img = catCover(c.id);
+          return (
+            <li>
+              <a href={c.path}>
+                <span class="circle">{img ? <img src={img.thumb} alt="" width="160" height="160" loading="lazy" /> : null}</span>
+                <span class="label">{c.name}</span>
+                <Icon name="arrow" size={16} />
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  </section>
+
+  <section class="band blush-tint prods" aria-labelledby="prods-title">
+    <div class="wrap split">
+      <div class="side" data-reveal>
+        <span class="bar" aria-hidden="true"></span>
+        <h2 id="prods-title">Nuestros productos</h2>
+        <p class="muted">Ramos, arreglos y plantas frescas, creados con mucho amor y dedicación.</p>
+        <a class="btn btn-orchid" href="/catalogo">Ver todos los productos <Icon name="arrow" size={18} /></a>
+      </div>
+      <ul class="cards five" data-stagger>
+        {featured.map((p, i) => <ProductCard product={p} eager={i < 3} />)}
+      </ul>
+    </div>
+  </section>
+
+  <section class="band blush gal" aria-labelledby="gal-title">
+    <div class="wrap split">
+      <div class="side" data-reveal>
+        <h2 id="gal-title">Galería</h2>
+        <p class="muted">Un pequeño vistazo a nuestro trabajo. Cada arreglo es único, como cada historia.</p>
+        <a class="btn btn-orchid" href="/galeria">Ver más fotos <Icon name="arrow" size={18} /></a>
+      </div>
+      <ul class="shots" data-stagger>
+        {gallery.map((g) => <li><img src={g.thumb} alt={g.alt} width="320" height="320" loading="lazy" /></li>)}
+      </ul>
+    </div>
+  </section>
+
+  <Services />
+  <Reviews />
+</Base>
+
+<style>
+  .hero {
+    position: relative; color: #fff; overflow: hidden;
+    background:
+      radial-gradient(circle at 12% 30%, rgb(255 214 190 / .55) 0 70px, transparent 71px),
+      radial-gradient(circle at 30% 80%, rgb(255 255 255 / .25) 0 90px, transparent 91px),
+      radial-gradient(circle at 70% 15%, rgb(255 190 210 / .45) 0 110px, transparent 111px),
+      radial-gradient(circle at 92% 70%, rgb(150 190 140 / .55) 0 130px, transparent 131px),
+      linear-gradient(120deg, #7a4a45 0%, #6b3f48 40%, #8a5560 100%);
+  }
+  .inner { display: grid; gap: 1.5rem; padding-block: clamp(2.5rem, 7vw, 5rem); align-items: center; }
+  @media (min-width: 900px) { .inner { grid-template-columns: 1.05fr 1fr; } }
+  .hello { font-size: clamp(2rem, 4vw, 3rem); margin: 0; color: #f5dde3; line-height: 1; }
+  .hero h1 { color: #fff; margin: 0 0 .5rem; font-size: clamp(2.4rem, 5.5vw, 4rem); font-weight: 600; text-shadow: 0 2px 14px rgb(0 0 0 / .3); }
+  .lead { font: 500 1.35rem var(--serif); margin: 0 0 .7rem; }
+  .txt { max-width: 460px; font-size: .98rem; text-shadow: 0 1px 8px rgb(0 0 0 / .35); }
+  .cta { display: flex; flex-wrap: wrap; gap: .8rem; margin-top: 1.4rem; }
+  .visual { position: relative; justify-self: center; width: min(100%, 520px); aspect-ratio: 1; }
+  .visual img { width: 100%; height: 100%; object-fit: cover; border-radius: 46% 54% 50% 50% / 52% 48% 52% 48%; box-shadow: 0 24px 60px rgb(0 0 0 / .4); border: 6px solid rgb(255 255 255 / .85); }
+  .stamp {
+    position: absolute; right: -4px; top: -10px; width: 150px; height: 150px; border-radius: 50%;
+    background: rgb(255 255 255 / .92); color: var(--wine); display: grid; place-content: center; justify-items: center; gap: .1rem;
+    text-align: center; padding: 1.2rem; border: 1.5px dashed var(--orchid); transform: rotate(-8deg);
+  }
+  .stamp .script { font-size: 1.25rem; line-height: 1.05; }
+  .stamp :global(svg) { color: var(--orchid); }
+
+  .sec-head h2 .orn { color: var(--orchid); opacity: .8; }
+  .cat-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.6rem 1rem; grid-template-columns: repeat(2, 1fr); }
+  @media (min-width: 700px) { .cat-list { grid-template-columns: repeat(3, 1fr); } }
+  @media (min-width: 1000px) { .cat-list { grid-template-columns: repeat(6, 1fr); } }
+  .cat-list a { display: grid; justify-items: center; gap: .6rem; text-align: center; text-decoration: none; color: var(--wine); }
+  .circle { width: min(112px, 100%); aspect-ratio: 1; border-radius: 50%; overflow: hidden; background: var(--blush-2); border: 2px solid #fff; box-shadow: 0 6px 18px rgb(74 38 56 / .15); transition: transform .3s; }
+  .circle img { width: 100%; height: 100%; object-fit: cover; }
+  .cat-list a:hover .circle { transform: scale(1.06); }
+  .label { font: .95rem var(--serif); line-height: 1.25; }
+
+  .blush-tint { background: linear-gradient(180deg, #fff 0%, var(--cream) 100%); }
+  .split { display: grid; gap: 1.6rem; align-items: start; }
+  @media (min-width: 1000px) { .split { grid-template-columns: 300px 1fr; } }
+  .side .bar { display: block; width: 18px; height: 2px; background: var(--orchid); margin-bottom: .8rem; }
+  .side h2 { margin-bottom: .6rem; }
+  .side p { max-width: 260px; margin-bottom: 1.2rem; }
+  .cards.five { grid-template-columns: repeat(2, 1fr); }
+  @media (min-width: 720px) { .cards.five { grid-template-columns: repeat(3, 1fr); } }
+  @media (min-width: 1200px) { .cards.five { grid-template-columns: repeat(5, 1fr); } }
+  .cards.five :global(.name) { font-size: .8rem; }
+
+  .shots { list-style: none; margin: 0; padding: 0; display: grid; gap: .8rem; grid-template-columns: repeat(2, 1fr); }
+  @media (min-width: 720px) { .shots { grid-template-columns: repeat(3, 1fr); } }
+  @media (min-width: 1200px) { .shots { grid-template-columns: repeat(5, 1fr); } }
+  .shots img { width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; border-radius: 4px; }
+</style>
